@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Rect, Text, Arc, Circle, Group } from "react-konva";
+import { Arc, Circle, Group, Layer, Rect, Stage, Text } from "../../imports";
 
 const Ground = () => {
   const stageRef = useRef();
+  const groupRef = useRef();
+  const containerRef = useRef(null);
   const blockArcRefs = useRef([]);
   const width = window.innerWidth;
   const height = window.innerHeight;
-
-  const [hoveredSlice, setHoveredSlice] = useState(null);
 
   const outerSlices = [
     { id: 1, angle: 0, color: "red", block: "A" },
@@ -44,157 +44,170 @@ const Ground = () => {
     };
   };
 
-  useEffect(() => {
-    outerSlices?.map((slice, index) => {
-      if (blockArcRefs[slice.id]?.shift()?.current) {
-        blockArcRefs[slice.id]
-          ?.shift()
-          ?.current.addEventListener(
-            "click",
-            console.log("outerSlices ref clicked")
-          );
-        return () => {
-          blockArcRefs[slice.id]
-            ?.shift()
-            ?.current.removeEventListener(
-              "click",
-              console.log("outerSlices ref removed")
-            );
-        };
-      }
-    });
-    innerSlices?.map((slice, index) => {
-      if (blockArcRefs[slice.id]?.shift()?.current) {
-        console.log("meow")
-        blockArcRefs[slice.id]
-          ?.shift()
-          ?.current.addEventListener(
-            "click",
-            console.log("innerSlices ref clicked")
-          );
-        return () => {
-          blockArcRefs[slice.id]
-            ?.shift()
-            ?.current.removeEventListener(
-              "click",
-              console.log("innerSlices ref removed")
-            );
-        };
-      }
-    });
-  }, []);
-
-  console.log("blockArcRefs :>> ", blockArcRefs);
-
   return (
-    <Stage width={width} height={height} ref={stageRef}>
-      <Layer>
-        <Group>
-          {outerSlices.map((slice, index) => {
-            const { x, y } = getLabelPosition(
-              (outerRadius + outerInnerRadius) / 2,
-              slice.angle + 22.5
-            );
-            return (
-              <Group
-                key={slice.id}
-                ref={(ref) => (blockArcRefs.current[slice.id] = ref)}
-              >
-                <Arc
-                  key={`outer-${index}`}
-                  x={width / 2}
-                  y={height / 2}
-                  innerRadius={outerInnerRadius}
-                  outerRadius={outerRadius}
-                  angle={45}
-                  rotation={slice.angle}
-                  fill={"#abd1ff"}
-                  stroke="#aabbf2"
-                  opacity={0.8}
-                  strokeWidth={1}
-                  fillAfterStrokeEnabled={true}
-                />
-                <Text
-                  text={slice.block}
-                  x={x - 20}
-                  y={y - 10}
-                  fontSize={24}
-                  fill="black"
-                  fontFamily="Rubik"
-                />
-              </Group>
-            );
-          })}
-          {innerSlices.map((slice, index) => {
-            const { x, y } = getLabelPosition(
-              (innerRadius + innerInnerRadius) / 2,
-              slice.angle + 22.5
-            );
-            return (
-              <Group
-                key={slice.id}
-                ref={(ref) => (blockArcRefs.current[slice.id] = ref)}
-              >
-                <Arc
-                  key={`inner-${index}`}
-                  x={width / 2}
-                  y={height / 2}
-                  innerRadius={innerInnerRadius}
-                  outerRadius={innerRadius}
-                  angle={45}
-                  rotation={slice.angle}
-                  fill={"#ddfab9"}
-                  stroke="#aef0ad"
-                  opacity={0.8}
-                  strokeWidth={1}
-                />
-                <Text
-                  text={slice.block}
-                  x={x - 20}
-                  y={y - 10}
-                  fontSize={24}
-                  fill="black"
-                  fontFamily="Rubik"
-                />
-              </Group>
-            );
-          })}
-          <Group>
-            <Circle
-              x={width / 2}
-              y={height / 2}
-              radius={150}
-              fill="#5d995c"
-              onMouseEnter={(e) => {
-                e.target._clearCache();
-                const container = e.target.getStage().container();
-                console.log("e.target :>> ", e.target);
-              }}
-            />
-            <Rect
-              x={width / 2 - 15}
-              y={height / 2 - 40}
-              width={width / 60}
-              height={height / 10}
-              fill="#bfc7bf"
-              strokeWidth={1}
-              stroke="#bfc7bf"
-              cornerRadius={2}
-            />
-            <Text
+    <div
+      style={{
+        position: "relative",
+        backgroundColor: "lightgrey",
+        width: "100vw",
+        height: "100vh",
+      }}
+      ref={containerRef}
+    >
+      <Stage width={width} height={height} ref={stageRef} scaleX={1} scaleY={1}>
+        <Layer>
+          <Group ref={groupRef}>
+            {outerSlices.map((slice, index) => {
+              const { x, y } = getLabelPosition(
+                (outerRadius + outerInnerRadius) / 2,
+                slice.angle + 22.5
+              );
+              return (
+                <Group key={slice.id}>
+                  <Arc
+                    key={`outer-${index}`}
+                    x={width / 2}
+                    y={height / 2}
+                    innerRadius={outerInnerRadius}
+                    outerRadius={outerRadius}
+                    angle={45}
+                    rotation={slice.angle}
+                    fill={"#abd1ff"}
+                    stroke="#aabbf2"
+                    opacity={0.8}
+                    strokeWidth={1}
+                    listening={true}
+                    onMouseEnter={(e) => {
+                      e.target._clearCache();
+                      const container = e.target.getStage().container();
+                      console.log("e hover :>> ", e);
+                      container.style.cursor = "pointer";
+                    }}
+                    onMouseLeave={(e) => {
+                      // props.onHover(null);
+                      const container = e.target.getStage().container();
+                      container.style.cursor = "";
+                    }}
+                    onClick={(e) => {
+                      e.target._clearCache();
+                      alert(`e click :>> ,${index}, ${slice.block}`);
+                    }}
+                  />
+                  <Text
+                    text={slice.block}
+                    x={x - 20}
+                    y={y - 10}
+                    fontSize={24}
+                    fill="black"
+                    fontFamily="Rubik"
+                  />
+                </Group>
+              );
+            })}
+            {innerSlices.map((slice, index) => {
+              const { x, y } = getLabelPosition(
+                (innerRadius + innerInnerRadius) / 2,
+                slice.angle + 22.5
+              );
+              return (
+                <Group
+                  key={slice.id}
+                  ref={(ref) => (blockArcRefs.current[slice.id] = ref)}
+                >
+                  <Arc
+                    key={`inner-${index}`}
+                    x={width / 2}
+                    y={height / 2}
+                    innerRadius={innerInnerRadius}
+                    outerRadius={innerRadius}
+                    angle={45}
+                    rotation={slice.angle}
+                    fill={"#ddfab9"}
+                    stroke="#aef0ad"
+                    opacity={0.8}
+                    strokeWidth={1}
+                    listening={true}
+                    onMouseEnter={(e) => {
+                      e.target._clearCache();
+                      const container = e.target.getStage().container();
+                      console.log("e hover :>> ", e);
+                      container.style.cursor = "pointer";
+                    }}
+                    onClick={(e) => {
+                      e.target._clearCache();
+                      alert(`e click :>> ,${index}, ${slice.block}`);
+                    }}
+                  />
+                  <Text
+                    text={slice.block}
+                    x={x - 20}
+                    y={y - 10}
+                    fontSize={24}
+                    fill="black"
+                    fontFamily="Rubik"
+                  />
+                </Group>
+              );
+            })}
+            <>
+              <Circle
+                x={width / 2}
+                y={height / 2}
+                radius={150}
+                fill="#5d995c"
+                listening={true}
+                onMouseEnter={(e) => {
+                  e.target._clearCache();
+                  const container = e.target.getStage().container();
+                  container.style.cursor = "pointer";
+                }}
+                onMouseLeave={(e) => {
+                  // props.onHover(null);
+                  const container = e.target.getStage().container();
+                  container.style.cursor = "";
+                }}
+                onClick={(e) => {
+                  alert(`ground click :>> `);
+                }}
+                onTap={(e) => {
+                  console.log("e tap :>> ", e);
+                }}
+              />
+              <Rect
+                x={width / 2 - 15}
+                y={height / 2 - 40}
+                width={width / 60}
+                height={height / 10}
+                fill="#bfc7bf"
+                strokeWidth={1}
+                stroke="#bfc7bf"
+                cornerRadius={2}
+              />
+              <Text
+                text={"Pitch this way"}
+                x={width / 2 - 40}
+                y={height / 2 - 70}
+                fontSize={14}
+                fill="white"
+                align="center"
+                verticalAlign="middle"
+                fontFamily="Rubik"
+              />
+              {/* <Text
               text={"Pitch this way"}
-              height={height - 120}
+              height={height}
               width={width}
               fill="white"
               align="center"
               verticalAlign="middle"
               fontSize={15}
               fontFamily="Rubik"
-            />
+            /> */}
+            </>
           </Group>
-        </Group>
-      </Layer>
-    </Stage>
+        </Layer>
+      </Stage>
+    </div>
   );
 };
 
