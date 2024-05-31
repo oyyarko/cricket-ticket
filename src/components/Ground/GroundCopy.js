@@ -85,7 +85,6 @@ const Ground = () => {
                   />
                 </>
               ))}
-              {console.log("slice :>> ", slice, slices)}
             </>
           ))}
           <Circle x={width / 2} y={height / 2} radius={50} fill="green" />

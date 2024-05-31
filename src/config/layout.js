@@ -2,6 +2,9 @@ export const SEAT_SIZE = 10;
 export const SEATS_DISTANCE = 15;
 export const SUBSECTION_PADDING = 30;
 
+export const SEAT_ROWS_DISTANCE = 30
+export const SEAT_COLUMNS_DISTANCE = 30
+
 export const SECTIONS_MARGIN = 10;
 export const SECTION_TOP_PADDING = 40;
 

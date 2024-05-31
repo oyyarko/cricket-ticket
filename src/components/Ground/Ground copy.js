@@ -46,47 +46,7 @@ const Ground = () => {
       y: height / 2 + radius * Math.sin(radian),
     };
   };
-
-  // useEffect(() => {
-  //   outerSlices?.map((slice, index) => {
-  //     if (blockArcRefs[slice.id]?.shift()?.current) {
-  //       blockArcRefs[slice.id]
-  //         ?.shift()
-  //         ?.current.addEventListener(
-  //           "click",
-  //           console.log("outerSlices ref clicked")
-  //         );
-  //       return () => {
-  //         blockArcRefs[slice.id]
-  //           ?.shift()
-  //           ?.current.removeEventListener(
-  //             "click",
-  //             console.log("outerSlices ref removed")
-  //           );
-  //       };
-  //     }
-  //   });
-  //   innerSlices?.map((slice, index) => {
-  //     if (blockArcRefs[slice.id]?.shift()?.current) {
-  //       console.log("meow")
-  //       blockArcRefs[slice.id]
-  //         ?.shift()
-  //         ?.current.addEventListener(
-  //           "click",
-  //           console.log("innerSlices ref clicked")
-  //         );
-  //       return () => {
-  //         blockArcRefs[slice.id]
-  //           ?.shift()
-  //           ?.current.removeEventListener(
-  //             "click",
-  //             console.log("innerSlices ref removed")
-  //           );
-  //       };
-  //     }
-  //   });
-  // }, []);
-
+  
   const handleClick = (id) => {
     alert("Rect clicked!", id);
     // Do whatever you want when the rect is clicked

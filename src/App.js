@@ -1,5 +1,6 @@
 import React from "react";
 import Ground from "./components/Ground/Ground";
+import SeatsArrangement from "./components/Seat/Seat";
 
 const App = () => {
   return (
@@ -7,7 +8,6 @@ const App = () => {
       <div className="text-center">
         <h1 className="text-indigo-600 font-semibold text-2xl">Cricket ticket booking app</h1>
         <Ground />
-        {/* <SeatBooking /> */}
       </div>
     </div>
   );
