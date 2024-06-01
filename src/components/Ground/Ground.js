@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Arc, Circle, Group, Layer, Rect, Stage, Text } from "../../imports";
-import SeatsArrangement from "../Seat/Seat";
 import {
   SEAT_COLUMNS_DISTANCE,
   SEAT_ROWS_DISTANCE,
@@ -22,7 +21,7 @@ const Ground = () => {
     Array(10)
       .fill()
       .map(() => Array(6).fill(0))
-  );
+  ); // 0: empty, 1: taken, 2: user-selected
 
   const handleSeatHover = useCallback((seat, pos) => {
     setPopup({
@@ -112,16 +111,25 @@ const Ground = () => {
           {selectedBlock.state ? (
             // <SeatsArrangement rows={10} cols={7} />
             <Group>
-              {matrices.map((rows, index) => {
-                return rows.map((row, id) => (
+              <Text
+                text={"Go back"}
+                x={width / 2 + 50}
+                y={height / 2 - 50}
+                fontSize={24}
+                fill="black"
+                fontFamily="Rubik"
+                onClick={() => setSelectedBlock({ state: false, id: null })}
+              />
+              {matrices.map((rows, rowIndexTop) => {
+                return rows.map((row, colIndexTop) => (
                   <>
                     <Circle
-                      key={index}
+                      key={rowIndexTop}
                       x={
-                        width / 2 + SEAT_COLUMNS_DISTANCE * id + SEATS_DISTANCE
+                        width / 2 + SEAT_COLUMNS_DISTANCE * colIndexTop + SEATS_DISTANCE
                       }
                       y={
-                        height / 2 + SEAT_ROWS_DISTANCE * index + SEATS_DISTANCE
+                        height / 2 + SEAT_ROWS_DISTANCE * rowIndexTop + SEATS_DISTANCE
                       }
                       radius={SEAT_SIZE}
                       fill={
@@ -140,15 +148,25 @@ const Ground = () => {
                       }
                       strokeWidth={1}
                       listening={true}
+                      onClick={() => {
+                        setMatrices((prev) => {
+                          return prev.map((row, rowIndex) =>
+                            rowIndex === rowIndexTop
+                              ? row.map((cell, colIndex) =>
+                                  colIndex === colIndexTop
+                                    ? cell === 2
+                                      ? 0
+                                      : 2
+                                    : cell
+                                )
+                              : row
+                          );
+                        });
+                      }}
                       onMouseEnter={(e) => {
                         e.target._clearCache();
-                        console.log(
-                          "e.target :>> ",
-                          e.target,
-                          e.target.getAbsolutePosition()
-                        );
                         handleSeatHover(
-                          index + "-" + id,
+                          rowIndexTop + "-" + colIndexTop,
                           e.target.getAbsolutePosition()
                         );
                       }}
