@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Arc, Circle, Group, Layer, Rect, Stage, Text } from "../../imports";
 import {
   SEAT_COLUMNS_DISTANCE,
@@ -22,6 +22,23 @@ const Ground = () => {
       .fill()
       .map(() => Array(6).fill(0))
   ); // 0: empty, 1: taken, 2: user-selected
+
+  const [selectedSeats, setSelectedSeats] = useState([]);
+
+  console.log("selectedSeats :>> ", selectedSeats);
+
+  useEffect(() => {
+    setSelectedSeats(
+      matrices.reduce((acc, row, i) => {
+        row.forEach((value, j) => {
+          if (value === 2) {
+            acc.push([i, j]);
+          }
+        });
+        return acc;
+      }, [])
+    );
+  }, [matrices]);
 
   const handleSeatHover = useCallback((seat, pos) => {
     setPopup({
@@ -109,12 +126,11 @@ const Ground = () => {
       <Stage width={width} height={height} ref={stageRef} onWheel={handleWheel}>
         <Layer>
           {selectedBlock.state ? (
-            // <SeatsArrangement rows={10} cols={7} />
-            <Group>
+            <Group draggable>
               <Text
                 text={"Go back"}
-                x={width / 2 + 50}
-                y={height / 2 - 50}
+                x={width / 2 + 45}
+                y={height / 2 - 40}
                 fontSize={24}
                 fill="black"
                 fontFamily="Rubik"
@@ -126,25 +142,29 @@ const Ground = () => {
                     <Circle
                       key={rowIndexTop}
                       x={
-                        width / 2 + SEAT_COLUMNS_DISTANCE * colIndexTop + SEATS_DISTANCE
+                        width / 2 +
+                        SEAT_COLUMNS_DISTANCE * colIndexTop +
+                        SEATS_DISTANCE
                       }
                       y={
-                        height / 2 + SEAT_ROWS_DISTANCE * rowIndexTop + SEATS_DISTANCE
+                        height / 2 +
+                        SEAT_ROWS_DISTANCE * rowIndexTop +
+                        SEATS_DISTANCE
                       }
                       radius={SEAT_SIZE}
                       fill={
                         row === 1
-                          ? "#3d65ad"
+                          ? "#ebe8e8"
                           : row === 2
-                          ? "#aba9a9"
-                          : "#e6ebf2"
+                          ? "#bf3e32"
+                          : "#5481c7"
                       }
                       stroke={
                         row === 1
-                          ? "#0e336e"
+                          ? "#858282"
                           : row === 2
-                          ? "#3333332b"
-                          : "#979899"
+                          ? "#781810"
+                          : "#325b99"
                       }
                       strokeWidth={1}
                       listening={true}
@@ -174,6 +194,16 @@ const Ground = () => {
                   </>
                 ));
               })}
+              <Text
+                text={"Pitch this way"}
+                x={width / 2 + 50}
+                y={height / 2 + 320}
+                fontSize={14}
+                fill="black"
+                align="center"
+                verticalAlign="middle"
+                fontFamily="Rubik"
+              />
             </Group>
           ) : (
             <Group ref={groupRef}>
