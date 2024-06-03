@@ -9,6 +9,7 @@ import {
 import SeatPopup from "../Seat/SeatPopup";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSeatsByBlock, selectSeats } from "../../redux/groundSlice";
+import socket from "../../services/socket";
 
 const legends = [
   { id: 1, label: "Available", color: "#5481c7" },
@@ -51,6 +52,23 @@ const Ground = () => {
       }, [])
     );
   }, [matrices]);
+
+  useEffect(() => {
+    socket?.on("booking", (booking) => {
+      if (selectedBlock.id === booking.block)
+        setMatrices((prevState) => {
+          const newState = [...prevState];
+          newState[booking.row] = [...prevState[booking.row]];
+          newState[booking.row][booking.col] = {
+            ...prevState[booking.row][booking.col],
+            status: booking.status,
+          };
+          return newState;
+        });
+    });
+
+    return () => socket?.off("booking");
+  }, [selectedBlock]);
 
   useEffect(() => {
     setMatrices(seats);
@@ -112,7 +130,7 @@ const Ground = () => {
     >
       {selectedBlock.state ? (
         <>
-          <div className="absolute flex flex-row p-3 justify-around min-w-full bg-amber-200 items-center z-10 top-0">
+          <div className="absolute flex flex-row p-3 justify-around min-w-full bg-amber-200 items-center z-10 top-8">
             <div
               className="cursor-pointer border-b border-b-black border-dashed hover:bg-black hover:text-white p-2 px-6 hover:rounded-full transition-all duration-100"
               onClick={() => setSelectedBlock({ state: false, id: null })}
@@ -136,7 +154,7 @@ const Ground = () => {
               Book selected tickets
             </button>
           </div>
-          <div className="absolute top-24 flex flex-row p-3 justify-center gap-6 rounded-full border-b-zinc-300 shadow-2xl border-b-2 px-6">
+          <div className="absolute top-32 flex flex-row p-3 justify-center gap-6 rounded-full border-b-zinc-300 shadow-2xl border-b-2 px-6">
             {legends.map((leg) => (
               <div
                 key={leg.id}
@@ -190,7 +208,7 @@ const Ground = () => {
                           ? "#3333332b"
                           : "#325b99"
                       }
-                      strokeWidth={1}
+                      strokeWidth={2}
                       listening={
                         row.status == 1 || row.status == 3 ? false : true
                       }
@@ -271,6 +289,7 @@ const Ground = () => {
                       x={x - 20}
                       y={y - 10}
                       fontSize={16}
+                      fontVariant="bold"
                       fill="black"
                       fontFamily="Rubik"
                     />
